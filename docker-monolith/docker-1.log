@@ -1,0 +1,8 @@
+REPOSITORY               TAG       IMAGE ID       CREATED         SIZE
+vika/ubuntu-tempt-file   latest    c1db87690b86   6 minutes ago   63.2MB
+nginx                    latest    7425d3a7c478   6 days ago      142MB
+ubuntu                   18.04     c6ad7e71ba7d   2 weeks ago     63.2MB
+hello-world              latest    feb5d9fea6a5   7 months ago    13.3kB
+
+В образе содержится статическая информация о слоях и описание
+В контенере + инфраструктурные элементы network, volume, запущенные процесы.
