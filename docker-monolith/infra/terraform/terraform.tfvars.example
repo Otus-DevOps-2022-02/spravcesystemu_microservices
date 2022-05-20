@@ -1,0 +1,7 @@
+cloud_id                  = "xyz"
+folder_id                 = "zyx"
+image_id                  = "asdd"
+subnet_id                 = "asdd"
+public_key_path           = "~/.ssh/yc.pub"
+service_account_key_file  = "key.json"
+instances                 = 1
