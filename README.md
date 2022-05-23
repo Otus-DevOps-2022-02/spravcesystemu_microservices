@@ -1,6 +1,52 @@
 # spravcesystemu_microservices
 spravcesystemu microservices repository
 
+ # Выполнено ДЗ docker-3. Docker-образы. Микросервисы
+ 
+ 1. Создана ветка docker-3. 
+ 2. Смотрим вывод команды docker-machine ls 
+
+```
+NAME          ACTIVE   DRIVER    STATE     URL                        SWARM   DOCKER      ERRORS
+docker-host   *        generic   Running   tcp://51.250.88.235:2376           v20.10.16
+```
+3.Копируем каталог src к себе на машину и правим Dockerfiles
+4. Скачиваем образ монги
+```
+docker pull mongo:latest
+```
+5.Собираем наши образы
+```
+docker build -t <your-dockerhub-login>/post:1.0 ./post-py
+docker build -t <your-dockerhub-login>/comment:1.0 ./comment
+docker build -t <your-dockerhub-login>/ui:1.0 ./ui
+```
+
+6.Создаем сеть для контейнеров 
+```
+docker network create reddit
+```
+
+7.Запускаем
+```
+docker run -d --network=reddit \
+    --network-alias=post_db --network-alias=comment_db mongo:latest
+docker run -d --network=reddit \
+    --network-alias=post <your-dockerhub-login>/post:1.0
+docker run -d --network=reddit \
+    --network-alias=comment <your-dockerhub-login>/comment:1.0
+docker run -d --network=reddit \
+    -p 9292:9292 <your-dockerhub-login>/ui:1.0
+```
+8.Проверяем, что всё работает:
+http://51.250.88.235:9292/
+
+![image](https://user-images.githubusercontent.com/89079372/169828746-417be745-eb38-4d1c-99ca-5a943661be32.png)
+
+
+
+
+
   # Выполнено ДЗ docker-2
 Технология контейнеризации.Введение в Docker.
 
