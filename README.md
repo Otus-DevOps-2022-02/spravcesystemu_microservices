@@ -1,6 +1,111 @@
 # spravcesystemu_microservices
 spravcesystemu microservices repository
 
+# Выполнено ДЗ docker-4. Docker: сети, docker-compose
+
+1. Создана ветка docker-4.
+2. Следуем командам из методички
+```
+docker run -ti --rm --network none joffotron/docker-net-tools -c ifconfig
+docker run -ti --rm --network host joffotron/docker-net-tools -c ifconfig
+docker-machine ssh docker-host ifconfig
+docker run --network host -d nginx
+docker kill $(docker ps -q)
+sudo ln -s /var/run/docker/netns /var/run/netns
+sudo ip netns
+```
+Создадим bridge network
+```
+docker network create reddit --driver bridge
+```
+И запустим проект 
+```
+> docker run -d --network=reddit mongo:latest
+> docker run -d --network=reddit <your-dockerhub-login>/post:1.0
+> docker run -d --network=reddit <your-dockerhub-login>/comment:1.0
+> docker run -d --network=reddit -p 9292:9292 <your-dockerhub-login>/ui:1.0
+```
+3. Остановим старые копии контейнеров
+```
+> docker kill $(docker ps -q)
+```
+Запустим новые
+```
+> docker run -d --network=reddit --network-alias=post_db --network-
+alias=comment_db mongo:latest
+> docker run -d --network=reddit --network-alias=post <your-login>/post:
+1.0
+> docker run -d --network=reddit --network-alias=comment <your-login>/
+comment:1.0
+> docker run -d --network=reddit -p 9292:9292 <your-login>/ui:1.0
+```
+4.Заходим по http://51.250.88.235:9292/ и проверяем, что всё ок.
+
+5.Создадим docker-сети
+```
+docker network create back_net --subnet=10.0.2.0/24
+docker network create front_net --subnet=10.0.1.0/24
+```
+Запустим контейнеры и проверяем, что всё ок
+```
+> docker run -d --network=front_net -p 9292:9292 --name ui <your-login>/ui:1.0
+> docker run -d --network=back_net --name comment <your-login>/comment:1.0
+> docker run -d --network=back_net --name post <your-login>/post:1.0
+> docker run -d --network=back_net --name mongo_db \
+--network-alias=post_db --network-alias=comment_db mongo:latest
+```
+Подключим контейнеры ко второй сети
+```
+> docker network connect front_net post
+> docker network connect front_net comment
+```
+6.Далее заходим по ssh на docker-host и ставим пакет bridge-utils
+```
+docker-machine ssh docker-host
+sudo apt-get update && sudo apt-get install bridge-utils
+docker network ls
+```
+```
+NETWORK ID     NAME        DRIVER    SCOPE
+04c727d9191e   back_net    bridge    local
+6673c455c2e6   bridge      bridge    local
+055192f26457   docker-4    bridge    local
+bbcf771799ed   front_net   bridge    local
+5d78a632abd2   host        host      local
+42e06b8d43db   none        null      local
+44e5e68c196c   test        bridge    local
+7156dd2fa22b   reddit      bridge    local
+```
+
+7.Далее выполняем 
+```
+ifconfig | grep br
+brctl show <interface> 
+```
+
+Затем 
+```
+sudo iptables -nL -t nat
+ps ax | grep docker-proxy
+```
+
+8.Устанавливаем docker-compose и запускаем docker-compose.yml в директории src
+9.Выполняем:	
+```
+docker kill $(docker ps -q)
+export USERNAME=<your-login>
+docker-compose up -d
+docker-compose ps
+```
+10.Проверяем, что всё запустилось.
+
+11.Редактируем docker-compose file.
+
+12. Чтобы задать имя проекта, его необходимо запустить с ключём -p, или указать назание контейнеров с помощью container_name
+```
+docker-compose -p project-name up -d
+```
+
  # Выполнено ДЗ docker-3. Docker-образы. Микросервисы
  
  1. Создана ветка docker-3. 
