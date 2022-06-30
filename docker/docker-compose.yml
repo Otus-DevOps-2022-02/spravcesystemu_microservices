@@ -1,33 +1,52 @@
 version: '3.3'
 services:
   post_db:
-    image: mongo:3.2
+    image: mongo:${VERSION_MONGO}
     volumes:
       - post_db:/data/db
     networks:
-      - back_net
-  ui:
+      back_net:
+        aliases:
+          - post_db
+          - comment_db
+    env_file:
+      - .env
 
-    build: /home/vika/spravcesystemu_microservices/src/ui    
-    image: 65435345345/ui
+  ui:
+    image: ${USER_NAME}/ui:${VERSION_UI}
+    env_file:
+      - .env
     ports:
-      - '9292:9292'
+      - ${PORT}:9292/tcp
     networks:
-      - back_net
+      - front_net
+
   post:
-    build: /home/vika/spravcesystemu_microservices/src/post-py
-    image: 65435345345/post
+    image: ${USER_NAME}/post:${VERSION_POST}
+    env_file:
+      - .env
     networks:
-      - back_net
-      - front_net
+      back_net:
+        aliases:
+          - post
+      front_net:
+        aliases:
+          - post
+
   comment:
-    build: /home/vika/spravcesystemu_microservices/src/comment
-    image: 65435345345/comment
+    image: ${USER_NAME}/comment:${VERSION_COMMENT}
+    env_file:
+      - .env
     networks:
-      - back_net
-      - front_net
+      back_net:
+        aliases:
+          - comment
+      front_net:
+        aliases:
+          - comment
+
   prometheus:
-    image: 65435345345/prometheus
+    image: ${USER_NAME}/prometheus
     ports:
       - '9090:9090'
     volumes:
@@ -39,6 +58,7 @@ services:
     networks:
       - back_net
       - front_net
+
   node-exporter:
     image: prom/node-exporter:v0.15.2
     user: root
