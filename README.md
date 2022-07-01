@@ -1,6 +1,60 @@
 # spravcesystemu_microservices
 spravcesystemu microservices repository
 
+# Выполнено ДЗ monitoring-1. Введение в мониторинг. Системы мониторинга
+
+1.Создана ветка monitoring-1
+
+2.Подготовлено окружение, запущен контейнер docker run --rm -p 9090:9090 -d --name prometheus prom/prometheus
+
+3. docker-machine ip docker-host заходим на веб-интерфейс Prometheus
+
+4. Создаем docker file
+
+5. Определим конфигурацию в prometheus.yml
+
+6.Создадим образ
+
+```
+export USER_NAME=username
+$ docker build -t $USER_NAME/prometheus .
+```
+
+7.Собираем images
+```
+/src/ui $ bash docker_build.sh
+/src/post-py $ bash docker_build.sh
+/src/comment $ bash docker_build.sh
+```
+или сразу из корня репозитория
+```
+for i in ui post-py comment; do cd src/$i; bash docker_build.sh; cd -; done
+```
+
+8.Определяем docker/docker-compose.yml
+
+9.Тестим docker-compose up -d
+
+10.Изучаем Prometheus
+
+11. Пушим образы
+```
+docker login
+Login Succeeded
+$ docker push $USER_NAME/ui
+$ docker push $USER_NAME/comment
+$ docker push $USER_NAME/post
+$ docker push $USER_NAME/prometheus
+```
+
+ https://hub.docker.com/repository/docker/65435345345/prometheus
+ 
+ https://hub.docker.com/repository/docker/65435345345/ui
+ 
+ https://hub.docker.com/repository/docker/65435345345/post
+ 
+ https://hub.docker.com/repository/docker/65435345345/comment
+
 
 # Выполнено ДЗ gitlab-ci-1. Устройство Gitlab CI. Построение процесса непрерывной поставки
 
