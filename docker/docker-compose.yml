@@ -1,106 +1,79 @@
 version: '3.3'
 services:
   post_db:
-<<<<<<< Updated upstream
-    image: mongo:${mongo_v}
-    environment:
-      - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
-=======
-    image: mongo:3.2
->>>>>>> Stashed changes
+    image: mongo:latest
     volumes:
       - post_db:/data/db
     networks:
-      - back_net
-  ui:
-<<<<<<< Updated upstream
-#    build: ./ui
-    image: ${username}/ui
+      BACK_NET:
+        aliases:
+          - post_db
+          - comment_db
     environment:
       - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
+
+  ui:
+    #build: ./ui
+    image: ${USERNAME}/ui:${BUILD_TAG}
     ports:
-      - ${ui_port}:9292/tcp
+      - ${UI_PORT}:9292/tcp
     networks:
-      - back_net
-      - front_net
+      BACK_NET:
+        aliases:
+          - ui
     logging:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
         tag: service.ui
+    environment:
+      - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
 
   post:
-#    build: ./post-py
-    image: ${username}/post
+   # build: ./post-py
+    image: ${USERNAME}/post:${BUILD_TAG}
     networks:
-      - front_net
-      - back_net
+      BACK_NET:
+        aliases:
+          - post
+      FRONT_NET:
+        aliases:
+          - post
     logging:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
         tag: service.post
     environment:
-      - POST_DATABASE_HOST=post_db
-      - POST_DATABASE=posts
       - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
-    depends_on:
-      - post_db
-    ports:
-      - "5000:5000"
 
   comment:
-#    build: ./comment
-    image: ${username}/comment
+    #build: ./comment
+    image: ${USERNAME}/comment:${BUILD_TAG}
+    networks:
+      BACK_NET:
+        aliases:
+          - comment
+      FRONT_NET:
+        aliases:
+          - comment
     environment:
       - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
-    networks:
-      - front_net
-      - back_net
-  prometheus:
-    image: ${username}/prometheus
-=======
 
-    build: /home/vika/spravcesystemu_microservices/src/ui    
-    image: 65435345345/ui
-    ports:
-      - '9292:9292'
-    networks:
-      - back_net
-  post:
-    build: /home/vika/spravcesystemu_microservices/src/post-py
-    image: 65435345345/post
-    networks:
-      - back_net
-      - front_net
-  comment:
-    build: /home/vika/spravcesystemu_microservices/src/comment
-    image: 65435345345/comment
-    networks:
-      - back_net
-      - front_net
   prometheus:
-    image: 65435345345/prometheus
->>>>>>> Stashed changes
+    image: ${USERNAME}/prometheus
     ports:
       - '9090:9090'
     volumes:
       - prometheus_data:/prometheus
     command: # Передаем доп параметры в командной строке
       - '--config.file=/etc/prometheus/prometheus.yml'
-<<<<<<< Updated upstream
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention=1d' # Задаем время хранения метрик в 1 день
     networks:
-      - front_net
-      - back_net
-=======
-      - '--storage.tsdb.path=/etc/prometheus/'
-      - '--storage.tsdb.retention=1d' # Задаем время хранения метрик в 1 день
-    networks:
-      - back_net
-      - front_net
->>>>>>> Stashed changes
+      - BACK_NET
+      - FRONT_NET
+
   node-exporter:
     image: prom/node-exporter:v0.15.2
     user: root
@@ -113,35 +86,35 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
     networks:
-      - back_net
-<<<<<<< Updated upstream
-=======
-      - front_net
-  mongo-exporter:
-    image: percona/mongodb_exporter:0.32.0
-    networks:
-      - back_net
+      - BACK_NET
+
+  mongod-exporter:
+    image: percona/mongodb_exporter:0.20
+    ports:
+      - 9216:9216
+      - 17001:17001
     command:
       - '--mongodb.uri=mongodb://post_db:27017'
-      - '--collect-all'
+    networks:
+      BACK_NET:
+
   blackbox-exporter:
     image: prom/blackbox-exporter:v0.21.0
     user: root
     networks:
-      - back_net
-      - front_net
->>>>>>> Stashed changes
+      BACK_NET:
+      FRONT_NET:
 
 volumes:
   post_db:
   prometheus_data:
 
 networks:
-  back_net:
+  BACK_NET:
     ipam:
       config:
-        - subnet: 10.0.2.0/24
-  front_net:
+        - subnet: ${BACKNET_SUBNET_PREF}
+  FRONT_NET:
     ipam:
       config:
-        - subnet: 10.0.1.0/24
+        - subnet: ${FRONTNET_SUBNET_PREF}
