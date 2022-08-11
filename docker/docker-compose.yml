@@ -1,14 +1,19 @@
 version: '3.3'
 services:
   post_db:
+<<<<<<< Updated upstream
     image: mongo:${mongo_v}
     environment:
       - ZIPKIN_ENABLED=${ZIPKIN_ENABLED}
+=======
+    image: mongo:3.2
+>>>>>>> Stashed changes
     volumes:
       - post_db:/data/db
     networks:
       - back_net
   ui:
+<<<<<<< Updated upstream
 #    build: ./ui
     image: ${username}/ui
     environment:
@@ -54,17 +59,48 @@ services:
       - back_net
   prometheus:
     image: ${username}/prometheus
+=======
+
+    build: /home/vika/spravcesystemu_microservices/src/ui    
+    image: 65435345345/ui
+    ports:
+      - '9292:9292'
+    networks:
+      - back_net
+  post:
+    build: /home/vika/spravcesystemu_microservices/src/post-py
+    image: 65435345345/post
+    networks:
+      - back_net
+      - front_net
+  comment:
+    build: /home/vika/spravcesystemu_microservices/src/comment
+    image: 65435345345/comment
+    networks:
+      - back_net
+      - front_net
+  prometheus:
+    image: 65435345345/prometheus
+>>>>>>> Stashed changes
     ports:
       - '9090:9090'
     volumes:
       - prometheus_data:/prometheus
     command: # Передаем доп параметры в командной строке
       - '--config.file=/etc/prometheus/prometheus.yml'
+<<<<<<< Updated upstream
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention=1d' # Задаем время хранения метрик в 1 день
     networks:
       - front_net
       - back_net
+=======
+      - '--storage.tsdb.path=/etc/prometheus/'
+      - '--storage.tsdb.retention=1d' # Задаем время хранения метрик в 1 день
+    networks:
+      - back_net
+      - front_net
+>>>>>>> Stashed changes
   node-exporter:
     image: prom/node-exporter:v0.15.2
     user: root
@@ -78,6 +114,23 @@ services:
       - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
     networks:
       - back_net
+<<<<<<< Updated upstream
+=======
+      - front_net
+  mongo-exporter:
+    image: percona/mongodb_exporter:0.32.0
+    networks:
+      - back_net
+    command:
+      - '--mongodb.uri=mongodb://post_db:27017'
+      - '--collect-all'
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.21.0
+    user: root
+    networks:
+      - back_net
+      - front_net
+>>>>>>> Stashed changes
 
 volumes:
   post_db:
