@@ -40,7 +40,6 @@ services:
     links:
       - "elasticsearch"
 
-
 networks:
   BACK_NET:
   FRONT_NET:
