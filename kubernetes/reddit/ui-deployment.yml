@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,13 +14,13 @@ spec:
       component: ui
   template:
     metadata:
-      name: ui
+      name: ui-pod
       labels:
         app: reddit
         component: ui
     spec:
       containers:
-      - image: 53005300/ui
+      - image: greenlama/ui:logging
         name: ui
         env:
         - name: ENV
