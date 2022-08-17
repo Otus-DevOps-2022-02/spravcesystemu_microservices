@@ -6,6 +6,7 @@ metadata:
   labels:
     app: reddit
     component: post
+    post-db: "true"
 spec:
   replicas: 3
   selector:
@@ -18,9 +19,10 @@ spec:
       labels:
         app: reddit
         component: post
+        post-db: "true"
     spec:
       containers:
-      - image: greenlama/post:logging
+      - image: 65435345345/post
         name: post
         env:
         - name: POST_DATABASE_HOST
