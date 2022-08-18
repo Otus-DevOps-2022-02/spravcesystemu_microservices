@@ -22,7 +22,7 @@ spec:
         post-db: "true"
     spec:
       containers:
-      - image: 65435345345/post
+      - image: chromko/post
         name: post
         env:
         - name: POST_DATABASE_HOST
