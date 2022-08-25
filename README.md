@@ -1,6 +1,19 @@
 # spravcesystemu_microservices
 spravcesystemu microservices repository
 
+# Выполнено ДЗ logging-1. Логирование и распределенная трассировка
+
+1.Подготовлено окружение, собраны образы с новыми тэгами
+
+2.Создана docker-machine logging
+
+3.Подняты контейнеры на удаленной машине kibana, fluentd, zipkin, elasticsearch, post, blackbox-exporter, ui, mongo-exporter, prometheus, node-exporter
+
+4.Знакомство с системой логирования, проведен сбор структурированных/неструктурированных логов
+
+5.Просмотр трейсов в Zipkin
+
+
 # Выполнено ДЗ monitoring-1. Введение в мониторинг. Системы мониторинга
 
 1.Создана ветка monitoring-1
